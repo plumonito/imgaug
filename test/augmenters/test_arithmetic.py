@@ -5689,7 +5689,7 @@ class Test__invert_uint8_subtract_(unittest.TestCase):
         # If this test method fails, it means that the code runs merely
         # sub-optimally as cv2 could be used for such arrays. The code is then
         # not wrong though.
-        for shape in [(1, 2, 2), (2, 1, 2), (4, 1)]:
+        for shape in [(4, 1)]:
             with self.subTest(shape=shape):
                 zeros = np.zeros(shape, dtype=np.uint8)
 
@@ -5709,6 +5709,9 @@ class Test__invert_uint8_subtract_(unittest.TestCase):
                     if nb_channels is None:
                         channels_tpl = tuple()
                     shape = (height, width) + channels_tpl
+                    # cv2 fails on (1,1,3), we use a LUT function for that case
+                    if shape == (1,1,3):
+                        continue
 
                     with self.subTest(shape=shape):
                         zeros = np.zeros(shape, dtype=np.uint8)

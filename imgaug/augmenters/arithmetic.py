@@ -184,7 +184,8 @@ def _add_scalar_to_uint8_(image, value):
 
     image_add = cv2.add(image, values, dst=image, dtype=cv2.CV_8U)
 
-    return image_add.reshape(input_shape)
+    item_count = np.prod(input_shape)
+    return image_add[:item_count].reshape(input_shape)
 
 
 def _add_scalar_to_non_uint8(image, value):
@@ -1448,6 +1449,8 @@ def _invert_uint8_subtract_(arr, max_value):
         arr = np.ascontiguousarray(arr)
 
     input_shape = arr.shape
+    if input_shape[0] == 0 or input_shape[1] == 0:
+        return arr
     if len(input_shape) > 2 and input_shape[-1] > 1:
         arr = arr.ravel()
     # This also supports a mask, which would help for thresholded invert, but
@@ -1456,7 +1459,8 @@ def _invert_uint8_subtract_(arr, max_value):
     # using a LUT.
     arr = cv2.subtract(int(max_value), arr, dst=arr)
     if arr.shape != input_shape:
-        return arr.reshape(input_shape)
+        item_count = np.prod(input_shape)
+        return arr[:item_count].reshape(input_shape)
     return arr
 
 

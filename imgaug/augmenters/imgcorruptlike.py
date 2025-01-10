@@ -73,6 +73,7 @@ import warnings
 
 import six.moves as sm
 import numpy as np
+import skimage as sk
 import skimage.filters
 
 import imgaug as ia
@@ -353,7 +354,11 @@ def apply_impulse_noise(x, severity=1, seed=None):
         Corrupted image.
 
     """
-    return _call_imgcorrupt_func("impulse_noise", seed, False, x, severity)
+    c = [.03, .06, .09, 0.17, 0.27][severity - 1]
+    x = sk.util.random_noise(np.array(x) / 255.,rng=seed, mode='s&p', amount=c)
+    return np.clip(x, 0, 1) * 255
+
+    # return _call_imgcorrupt_func("impulse_noise", seed, False, x, severity)
 
 
 def apply_speckle_noise(x, severity=1, seed=None):
@@ -475,7 +480,7 @@ def _apply_glass_blur_imgaug(x, severity=1):
 
     x = (
         skimage.filters.gaussian(
-            np.array(x) / 255., sigma=sigma, multichannel=True
+            np.array(x) / 255., sigma=sigma, channel_axis=2
         ) * 255
     ).astype(np.uint)
     x_shape = x.shape
@@ -496,7 +501,7 @@ def _apply_glass_blur_imgaug(x, severity=1):
     )
 
     return np.clip(
-        skimage.filters.gaussian(x / 255., sigma=sigma, multichannel=True),
+        skimage.filters.gaussian(x / 255., sigma=sigma, channel_axis=2),
         0, 1
     ) * 255
 
