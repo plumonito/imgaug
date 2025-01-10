@@ -1,5 +1,4 @@
-# 4.6.0 currently causes crashes, see https://github.com/pytest-dev/pytest/issues/5358
-pytest>=3.0.5,<4.6.0
+pytest>=6.2.5
 #
 # add subTest() support for pytest.
 # only available for py3.4+
